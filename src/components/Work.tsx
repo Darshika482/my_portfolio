@@ -119,6 +119,7 @@ const Work = () => {
               >
                 <Box
                   as={project.link ? Link : 'div'}
+                  // @ts-ignore
                   to={project.link}
                   display="block"
                   textDecoration="none"

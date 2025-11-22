@@ -6,7 +6,7 @@ import * as THREE from 'three';
 const Hero3D = () => {
     const groupRef = useRef<THREE.Group>(null);
 
-    useFrame((state, delta) => {
+    useFrame((_state, delta) => {
         if (groupRef.current) {
             // Slow rotation of the entire staircase
             groupRef.current.rotation.y += delta * 0.1;
