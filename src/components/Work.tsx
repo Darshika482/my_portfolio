@@ -73,6 +73,12 @@ const Work = () => {
       description: 'A portfolio website featuring smooth animations and responsive design across all devices.',
       tags: ['React', 'Framer Motion', 'Responsive'],
     },
+    {
+      title: 'Disk 3D Animation',
+      description: 'A mesmerizing 3D glass pill loading animation built with React Three Fiber and post-processing effects.',
+      tags: ['React', 'Three.js', 'R3F', 'Vite'],
+      link: 'http://localhost:5174',
+    },
   ];
 
   return (

@@ -22,34 +22,50 @@ const Card = ({ step, index, scrollYProgress, totalSteps }: { step: Step; index:
     const end = start + stepRange;
 
     // Enhanced Y Position: Starts higher, drops in, pauses, then drops into envelope
-    // Add slight offset for stacking effect
-    const stackOffset = index * 15; // Increased offset for visibility
+    // Stack Offset: Cards stack from back to front.
+    // To match the "fanned" image:
+    // - Back card (Index 0) should be highest (lowest Y value).
+    // - Front card (Index 4) should be lowest (highest Y value).
+    // So we ADD the offset.
+    const stackOffset = index * 40; // Spacing between cards
     const y = useTransform(
         scrollYProgress,
-        [start, start + stepRange * 0.3, start + stepRange * 0.7, end],
-        ['-60vh', '0vh', '0vh', `calc(45vh - ${stackOffset}px)`]
+        [start, start + stepRange * 0.4, start + stepRange * 0.8, end],
+        ['-100vh', '0vh', '0vh', `calc(20vh + ${stackOffset}px)`] // Dropping to ~20vh + offset
     );
 
     // Scale: Starts slightly larger, normalizes, then shrinks into envelope
     const scale = useTransform(
         scrollYProgress,
         [start, start + stepRange * 0.3, end - 0.1, end],
-        [0.8, 1, 1, 0.9]
+        [0.9, 1, 1, 0.95]
     );
 
-    // Opacity: Fade in -> Stay -> Fade out
+    // Opacity: NO FADE OUT. Stays visible.
     const opacity = useTransform(
         scrollYProgress,
-        [start, start + 0.1, end - 0.1, end],
-        [0, 1, 1, 1]
+        [start, start + 0.1],
+        [0, 1]
     );
 
-    // 3D Rotation: Tilts as it falls, then settles with random tilt
-    const randomRotate = (index % 2 === 0 ? 1 : -1) * (index * 2);
+    // 3D Rotation + Fan Effect
+    // Fan: Rotate based on index relative to center.
+    // Center is index 2.
+    // Index 0: -10deg, Index 4: +10deg
+    const fanRotation = (index - 2) * 5;
+
+    // Initial fall rotation (random) -> Final fan rotation
+    // const randomRotate = (index % 2 === 0 ? 1 : -1) * (index * 2); // Unused
     const rotateX = useTransform(
         scrollYProgress,
         [start, start + stepRange * 0.3, end],
-        [45, 0, randomRotate] // Settles at random tilt
+        [60, 0, 0] // Flatten out X rotation
+    );
+
+    const rotateZ = useTransform(
+        scrollYProgress,
+        [end - 0.1, end],
+        [0, fanRotation] // Apply fan rotation at the end
     );
 
     return (
@@ -59,25 +75,27 @@ const Card = ({ step, index, scrollYProgress, totalSteps }: { step: Step; index:
                 scale,
                 opacity,
                 rotateX,
+                rotateZ,
                 position: 'absolute',
-                top: '40%',
+                top: '30%',
                 left: 0,
                 right: 0,
                 margin: 'auto',
-                perspective: '1000px'
+                perspective: '1200px',
+                zIndex: index + 20 // Higher index = on top of previous cards
             }}
             className="flow-card-wrapper"
         >
             <div className="flow-card">
                 <div className="card-content" style={{
                     '--card-color': step.color,
-                    boxShadow: `0 0 40px -10px ${step.color}40`
+                    // boxShadow removed to allow CSS 3D effect
                 } as React.CSSProperties}>
                     <div className="card-header">
                         <span className="card-icon" style={{ background: `${step.color}20`, borderColor: `${step.color}40` }}>{step.icon}</span>
                         <div className="card-title-group">
                             <span className="card-step-label">Step {index + 1}</span>
-                            <h3 style={{ color: step.color, textShadow: `0 0 20px ${step.color}80` }}>{step.title}</h3>
+                            <h3 style={{ color: step.color, textShadow: `0 0 10px ${step.color}40` }}>{step.title}</h3>
                         </div>
                     </div>
                     <p>{step.desc}</p>
@@ -104,13 +122,13 @@ const EnvelopeLearningPath: React.FC = () => {
     const envelopeGlow = useTransform(
         scrollYProgress,
         [0, 0.5, 1],
-        ['0px 0px 0px rgba(0,223,216,0)', '0px 0px 50px rgba(0,223,216,0.3)', '0px 0px 0px rgba(0,223,216,0)']
+        ['0px 0px 0px rgba(0,223,216,0)', '0px 0px 100px rgba(0,223,216,0.2)', '0px 0px 0px rgba(0,223,216,0)']
     );
 
     // Flap Z-Index: Behind cards when open, in front when closed
     const flapZIndex = useTransform(
         scrollYProgress,
-        (v) => (v > 0.1 && v < 0.9 ? 15 : 40)
+        (v) => (v > 0.1 && v < 0.9 ? 15 : 50) // Higher than cards (index+20 max is ~25)
     );
 
     return (
@@ -185,7 +203,7 @@ const EnvelopeLearningPath: React.FC = () => {
                 .header-content {
                     text-align: center;
                     z-index: 50; /* Ensure header is on top */
-                    margin-top: 60px;
+                    margin-top: 40px;
                 }
 
                 .badge {
@@ -222,11 +240,11 @@ const EnvelopeLearningPath: React.FC = () => {
                 /* Envelope Positioning */
                 .envelope-wrapper {
                     position: absolute;
-                    bottom: 40px;
+                    bottom: -20px; /* Lowered even more */
                     left: 50%;
                     transform: translateX(-50%);
-                    width: 360px;
-                    height: 220px;
+                    width: 800px; /* Increased from 600px */
+                    height: 450px; /* Increased from 340px */
                     perspective: 1000px;
                     pointer-events: none;
                 }
@@ -236,7 +254,7 @@ const EnvelopeLearningPath: React.FC = () => {
                 }
 
                 .front-layer {
-                    z-index: 30;
+                    z-index: 40; /* Higher than cards */
                 }
 
                 .cards-container {
@@ -251,8 +269,8 @@ const EnvelopeLearningPath: React.FC = () => {
                 }
 
                 .flow-card-wrapper {
-                    width: 380px;
-                    height: 220px;
+                    width: 750px; /* Increased from 560px */
+                    height: 400px; /* Increased from 300px */
                 }
 
                 .flow-card {
@@ -262,9 +280,9 @@ const EnvelopeLearningPath: React.FC = () => {
                 }
 
                 .card-content {
-                    background: #0a0a12;
-                    border-radius: 24px;
-                    padding: 32px;
+                    background: #1a1a24;
+                    border-radius: 32px;
+                    padding: 50px;
                     height: 100%;
                     display: flex;
                     flex-direction: column;
@@ -272,8 +290,13 @@ const EnvelopeLearningPath: React.FC = () => {
                     text-align: left;
                     position: relative;
                     overflow: hidden;
-                    border: 1px solid transparent;
+                    border: 1px solid rgba(255,255,255,0.05);
                     background-clip: padding-box;
+                    /* 3D Thickness & Matte Look */
+                    box-shadow: 
+                        0 10px 0 #0f0f16, /* Solid shadow for thickness */
+                        0 25px 50px rgba(0,0,0,0.5), /* Soft drop shadow */
+                        inset 0 1px 0 rgba(255,255,255,0.1); /* Top edge highlight */
                 }
 
                 .card-content::before {
@@ -284,26 +307,27 @@ const EnvelopeLearningPath: React.FC = () => {
                     bottom: 0;
                     left: 0;
                     z-index: -1;
-                    margin: -2px;
+                    margin: -1px;
                     border-radius: inherit;
-                    background: linear-gradient(135deg, var(--card-color), transparent 60%);
+                    background: linear-gradient(135deg, var(--card-color), transparent 50%);
+                    opacity: 0.1; /* Reduced opacity for matte feel */
                 }
 
                 .card-header {
                     display: flex;
                     align-items: center;
-                    gap: 20px;
-                    margin-bottom: 20px;
+                    gap: 32px;
+                    margin-bottom: 32px;
                 }
 
                 .card-icon {
-                    width: 56px;
-                    height: 56px;
-                    border-radius: 16px;
+                    width: 90px; /* Larger icon */
+                    height: 90px;
+                    border-radius: 24px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 1.8rem;
+                    font-size: 3.5rem;
                     background: rgba(255, 255, 255, 0.03);
                     border: 1px solid rgba(255, 255, 255, 0.1);
                     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -312,12 +336,12 @@ const EnvelopeLearningPath: React.FC = () => {
                 .card-title-group {
                     display: flex;
                     flex-direction: column;
-                    gap: 4px;
+                    gap: 8px;
                 }
 
                 .card-step-label {
                     font-family: 'Montserrat', sans-serif;
-                    font-size: 0.75rem;
+                    font-size: 1rem;
                     text-transform: uppercase;
                     letter-spacing: 2px;
                     color: #888;
@@ -326,7 +350,7 @@ const EnvelopeLearningPath: React.FC = () => {
 
                 .card-content h3 {
                     font-family: 'Aclonica', sans-serif;
-                    font-size: 1.8rem;
+                    font-size: 3rem; /* Larger title */
                     margin: 0;
                     line-height: 1.2;
                     text-shadow: 0 0 20px rgba(var(--card-rgb), 0.5);
@@ -334,10 +358,11 @@ const EnvelopeLearningPath: React.FC = () => {
 
                 .card-content p {
                     font-family: 'Montserrat', sans-serif;
-                    font-size: 1rem;
+                    font-size: 1.4rem;
                     color: #ccc;
                     line-height: 1.6;
                     font-weight: 400;
+                    max-width: 90%;
                 }
 
                 .envelope-back {
@@ -346,7 +371,7 @@ const EnvelopeLearningPath: React.FC = () => {
                     width: 100%;
                     height: 100%;
                     background: #151525;
-                    border-radius: 12px;
+                    border-radius: 24px;
                     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
                     border: 1px solid rgba(255,255,255,0.05);
                 }
@@ -355,14 +380,14 @@ const EnvelopeLearningPath: React.FC = () => {
                     position: absolute;
                     bottom: 0;
                     width: 100%;
-                    height: 130px;
+                    height: 280px; /* Increased front height */
                     background: linear-gradient(165deg, #252545, #1a1a2e);
-                    border-radius: 0 0 12px 12px;
+                    border-radius: 0 0 24px 24px;
                     border-top: 1px solid rgba(255,255,255,0.1);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    z-index: 30;
+                    z-index: 40;
                     box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
                 }
 
@@ -373,7 +398,7 @@ const EnvelopeLearningPath: React.FC = () => {
                     width: 100%;
                     height: 100%;
                     background: #1e1e35;
-                    clip-path: polygon(0 0, 50% 60%, 100% 0);
+                    clip-path: polygon(0 0, 50% 55%, 100% 0);
                     transform-origin: top;
                     transition: all 0.5s ease;
                     border-top: 1px solid rgba(255,255,255,0.1);
@@ -383,9 +408,9 @@ const EnvelopeLearningPath: React.FC = () => {
                     font-family: 'Orbitron', sans-serif;
                     color: rgba(255,255,255,0.4);
                     letter-spacing: 3px;
-                    font-size: 0.7rem;
+                    font-size: 1rem;
                     font-weight: 600;
-                    margin-top: 20px;
+                    margin-top: 60px;
                 }
 
                 .envelope-glow {
