@@ -11,7 +11,7 @@ const HoloScreen3D: React.FC = () => {
         if (!groupRef.current) return;
 
         // Active during Page 2-3
-        const r1 = scroll.range(2 / 6, 1 / 6);
+        // const r1 = scroll.range(2 / 6, 1 / 6);
         const r2 = scroll.curve(2 / 6, 1 / 6);
 
         // Slide in from bottom

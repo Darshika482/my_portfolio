@@ -12,7 +12,7 @@ const HeroOrb = () => {
     const mesh = useRef<THREE.Mesh>(null);
     const scroll = useScroll();
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         if (!mesh.current) return;
         // Rotate constantly
         mesh.current.rotation.y += delta * 0.5;
