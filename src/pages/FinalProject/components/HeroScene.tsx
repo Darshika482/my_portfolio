@@ -1,7 +1,8 @@
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Edges, Float } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Environment, Edges, Float } from '@react-three/drei';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
+import { useRef } from 'react';
 
 const Stairs = () => {
     const steps = 12;
@@ -267,14 +268,218 @@ const ClimbingCharacter = () => {
     );
 };
 
-const Hero3D = () => {
+const HeroScene = () => {
+    // Responsive logic for 3D scene could go here (e.g. useThree viewport), 
+    // but for now we'll just shift the model and use CSS for text.
+
     return (
-        <group position={[2, -1, 0]} rotation={[0, -0.5, 0]}>
-            <Stairs />
-            <ClimbingCharacter />
-            <Gate />
-        </group>
+        <div style={{ width: '100vw', height: '100vh', background: '#020205', position: 'relative', overflow: 'hidden' }}>
+            <Canvas shadows camera={{ position: [0, 1, 9], fov: 50 }}>
+                <fog attach="fog" args={['#020205', 10, 50]} /> {/* Pushed fog back to reveal gate */}
+                <ambientLight intensity={0.2} />
+
+                {/* Shifted 3D Content Group */}
+                <group position={[8.5, -1, 0]}> {/* Moved further to the right */}
+                    <Stairs />
+                    <ClimbingCharacter />
+                    <Gate />
+                </group>
+
+                <Environment preset="city" />
+
+                <OrbitControls
+                    enableZoom={false}
+                    maxPolarAngle={Math.PI / 2 - 0.1}
+                    minPolarAngle={Math.PI / 4}
+                    target={[8.5, 2, -5]} // Target the new position
+                    autoRotate
+                    autoRotateSpeed={0.5}
+                />
+
+                {/* Post Processing for Glow */}
+                <EffectComposer>
+                    <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} radius={0.4} />
+                </EffectComposer>
+            </Canvas>
+
+            {/* Responsive Text Container */}
+            <div className="hero-text-container">
+                <style>{`
+                    .hero-text-container {
+                        position: absolute;
+                        top: 50%;
+                        left: 8%; /* Left aligned */
+                        transform: translateY(-50%);
+                        color: white;
+                        pointer-events: none;
+                        text-align: left; /* Left align text */
+                        z-index: 10;
+                        width: 90%;
+                        max-width: 600px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-start; /* Align items to start */
+                        gap: 1.5rem;
+                    }
+
+                    /* Mobile Responsive Styles */
+                    @media (max-width: 768px) {
+                        .hero-text-container {
+                            left: 50%;
+                            top: 60%; /* Push down slightly */
+                            transform: translate(-50%, -50%);
+                            text-align: center;
+                            align-items: center;
+                            width: 90%;
+                            background: rgba(2, 2, 5, 0.6); /* Add backdrop for readability on mobile */
+                            padding: 2rem;
+                            border-radius: 20px;
+                            backdrop-filter: blur(5px);
+                        }
+                        
+                        /* Adjust 3D scene via canvas if needed, but CSS overlay changes often suffice */
+                    }
+
+                    @keyframes blurIn {
+                        0% {
+                            filter: blur(10px);
+                            opacity: 0;
+                            transform: translateY(20px);
+                        }
+                        100% {
+                            filter: blur(0);
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                `}</style>
+
+                {/* Badge */}
+                <div style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(10px)',
+                    marginBottom: '0.5rem',
+                    animation: 'blurIn 0.8s ease-out forwards'
+                }}>
+                    Live Learning Arena
+                </div>
+
+                {/* Headline */}
+                <h1 style={{
+                    fontSize: 'clamp(2rem, 4vw, 3.5rem)', /* Reduced font size */
+                    lineHeight: '1.1',
+                    margin: 0,
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '700',
+                    background: 'linear-gradient(to bottom, #ffffff, #a5a5a5)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                    animation: 'blurIn 1s ease-out forwards',
+                    animationDelay: '0.2s',
+                    opacity: 0 // Start hidden for animation
+                }}>
+                    Learn by building,<br />not just watching
+                </h1>
+
+                {/* Subheadline */}
+                <p style={{
+                    fontSize: '1.1rem',
+                    color: '#a0a0a0',
+                    maxWidth: '500px',
+                    lineHeight: '1.6',
+                    margin: 0,
+                    animation: 'blurIn 1s ease-out forwards',
+                    animationDelay: '0.4s',
+                    opacity: 0
+                }}>
+                    Turn ideas into shipped projects with structured roadmaps, rapid-fire challenges, and a coach that adapts to you in real time.
+                </p>
+
+                {/* Stats */}
+                <div style={{
+                    display: 'flex',
+                    gap: '3rem',
+                    marginTop: '1rem',
+                    marginBottom: '1rem',
+                    flexWrap: 'wrap', /* Allow wrapping on small screens */
+                    justifyContent: 'flex-start'
+                }}>
+                    <div style={{ textAlign: 'left' }}> {/* Align left for desktop */}
+                        <div style={{ fontSize: '0.8rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Active Learners</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>12,400+</div>
+                    </div>
+                    <div style={{ textAlign: 'left' }}>
+                        <div style={{ fontSize: '0.8rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Build-Ready Projects</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>320+</div>
+                    </div>
+                </div>
+
+                {/* Buttons */}
+                <div style={{
+                    display: 'flex',
+                    gap: '1rem',
+                    pointerEvents: 'auto',
+                    flexWrap: 'wrap'
+                }}>
+                    <button style={{
+                        padding: '1rem 2.5rem',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(79, 70, 229, 0.8))', // Purple to Indigo gradient
+                        color: 'white',
+                        fontWeight: '600',
+                        fontSize: '1rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        backdropFilter: 'blur(10px)',
+                        boxShadow: '0 0 20px rgba(147, 51, 234, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2)', // Outer glow + Inner depth
+                        textShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                        letterSpacing: '0.02em'
+                    }}
+                        onClick={() => window.open('https://datasense-level-up-1fcf.vercel.app/', '_blank')}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 0 30px rgba(147, 51, 234, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.4)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 0 20px rgba(147, 51, 234, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2)';
+                        }}>
+                        Start Learning Free
+                    </button>
+                    <button style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        background: 'rgba(0,0,0,0.5)',
+                        color: 'white',
+                        fontWeight: '600',
+                        fontSize: '1rem',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                    }}>
+                        Explore Projects
+                    </button>
+                </div>
+
+                {/* Footer Text */}
+                <p style={{
+                    fontSize: '0.8rem',
+                    color: '#666',
+                    marginTop: '0.5rem'
+                }}>
+                    Built by creators, no credit card required to try
+                </p>
+            </div>
+        </div>
     );
 };
 
-export default Hero3D;
+export default HeroScene;

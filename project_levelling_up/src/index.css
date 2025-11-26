@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon-cyan: #22d3ee;
+  --color-neon-purple: #a78bfa;
+  --color-neon-amber: #fbbf24;
+  --color-dark-bg: #050505;
+  --color-dark-surface: #1a1a1a;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'Orbitron', sans-serif;
+  --font-subheading: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-dark-bg);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}

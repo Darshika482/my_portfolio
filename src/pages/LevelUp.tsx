@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { ScrollControls, Scroll, Environment, Stars, Float } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette } from '@react-three/postprocessing';
-import { Box, Heading, Text, Button, VStack, Container, ChakraProvider, defaultSystem } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, VStack, Container } from '@chakra-ui/react';
 import Hero3D from '../components/levelup/Hero3D';
 import HowItWorks from '../components/levelup/HowItWorks';
 import CodePad from '../components/levelup/CodePad';
@@ -57,70 +57,131 @@ const LevelUpScene = () => {
 
                 {/* HTML Content Layer */}
                 <Scroll html style={{ width: '100%' }}>
-                    <ChakraProvider value={defaultSystem}>
-                        {/* Section 1: Hero */}
-                        <Section align="left">
-                            <Heading
-                                as="h1"
-                                size="4xl"
-                                color="white"
-                                css={{
-                                    background: "linear-gradient(to right, #c4b5fd, #67e8f9)",
-                                    WebkitBackgroundClip: "text",
-                                    WebkitTextFillColor: "transparent"
-                                }}
-                            >
-                                LevelUp
-                            </Heading>
-                            <Text fontSize="2xl" color="gray.300" fontWeight="medium">
-                                Your AI-Guided Learning Platform.
-                            </Text>
+                    {/* Section 1: Hero */}
+                    <Section align="left">
+                        {/* Badge */}
+                        <Box
+                            bg="rgba(255, 255, 255, 0.1)"
+                            px={4}
+                            py={2}
+                            borderRadius="20px"
+                            fontSize="sm"
+                            letterSpacing="0.1em"
+                            textTransform="uppercase"
+                            border="1px solid rgba(255, 255, 255, 0.2)"
+                            backdropFilter="blur(10px)"
+                            mb={4}
+                            color="white"
+                            width="fit-content"
+                        >
+                            Live Learning Arena
+                        </Box>
+
+                        <Heading
+                            as="h1"
+                            size="4xl"
+                            color="white"
+                            lineHeight="1.1"
+                            mb={6}
+                            css={{
+                                background: "linear-gradient(to bottom, #ffffff, #a5a5a5)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                textShadow: "0 10px 30px rgba(0,0,0,0.5)"
+                            }}
+                        >
+                            Learn by building,<br />not just watching
+                        </Heading>
+
+                        <Text fontSize="lg" color="gray.400" mb={8} maxW="500px" lineHeight="1.6">
+                            Turn ideas into shipped projects with structured roadmaps, rapid-fire challenges, and a coach that adapts to you in real time.
+                        </Text>
+
+                        {/* Stats */}
+                        <Box display="flex" gap={12} mb={8}>
+                            <Box>
+                                <Text fontSize="xs" color="gray.500" textTransform="uppercase" letterSpacing="0.05em" mb={1}>Active Learners</Text>
+                                <Text fontSize="2xl" fontWeight="bold" color="white">12,400+</Text>
+                            </Box>
+                            <Box>
+                                <Text fontSize="xs" color="gray.500" textTransform="uppercase" letterSpacing="0.05em" mb={1}>Build-Ready Projects</Text>
+                                <Text fontSize="2xl" fontWeight="bold" color="white">320+</Text>
+                            </Box>
+                        </Box>
+
+                        {/* Buttons */}
+                        <Box display="flex" gap={4} flexWrap="wrap">
                             <Button
                                 size="lg"
-                                colorPalette="purple"
-                                variant="solid"
+                                px={8}
+                                borderRadius="12px"
+                                color="white"
+                                fontWeight="600"
                                 css={{
-                                    bgGradient: "to-r", gradientFrom: "purple.500", gradientTo: "blue.500",
-                                    _hover: { bgGradient: "to-r", gradientFrom: "purple.400", gradientTo: "blue.400", transform: "scale(1.05)" }
+                                    background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(79, 70, 229, 0.8))',
+                                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                                    backdropFilter: 'blur(10px)',
+                                    boxShadow: '0 0 20px rgba(147, 51, 234, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2)',
+                                    _hover: {
+                                        transform: 'translateY(-2px)',
+                                        boxShadow: '0 0 30px rgba(147, 51, 234, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.4)'
+                                    }
                                 }}
+                                onClick={() => window.open('https://datasense-level-up-1fcf.vercel.app/', '_blank')}
                             >
-                                Get Started
+                                Start Learning Free
                             </Button>
-                        </Section>
+                            <Button
+                                size="lg"
+                                px={8}
+                                borderRadius="8px"
+                                variant="outline"
+                                color="white"
+                                borderColor="whiteAlpha.200"
+                                bg="blackAlpha.500"
+                                _hover={{ bg: "blackAlpha.600" }}
+                            >
+                                Explore Projects
+                            </Button>
+                        </Box>
 
-                        {/* Section 2: How It Works */}
-                        <Section align="right">
-                            <Heading size="3xl" color="white" mb={4}>Structured Flow</Heading>
-                            <Text fontSize="xl" color="gray.400">
-                                Module → Lesson → Step. <br />
-                                A proven path to mastery, guided by AI.
-                            </Text>
-                        </Section>
+                        <Text fontSize="xs" color="gray.600" mt={4}>
+                            Built by creators, no credit card required to try
+                        </Text>
+                    </Section>
 
-                        {/* Section 3: CodePad */}
-                        <Section align="left">
-                            <Heading size="3xl" color="white" mb={4}>Interactive CodePad</Heading>
-                            <Text fontSize="xl" color="gray.400">
-                                Write code, get instant feedback. <br />
-                                The environment adapts to you.
-                            </Text>
-                        </Section>
+                    {/* Section 2: How It Works */}
+                    <Section align="right">
+                        <Heading size="3xl" color="white" mb={4}>Structured Flow</Heading>
+                        <Text fontSize="xl" color="gray.400">
+                            Module → Lesson → Step. <br />
+                            A proven path to mastery, guided by AI.
+                        </Text>
+                    </Section>
 
-                        {/* Section 4: Gamification */}
-                        <Section align="right">
-                            <Heading size="3xl" color="white" mb={4}>Stay Motivated</Heading>
-                            <Text fontSize="xl" color="gray.400">
-                                Streaks, badges, and progress. <br />
-                                Level up your career.
-                            </Text>
-                        </Section>
-                    </ChakraProvider>
+                    {/* Section 3: CodePad */}
+                    <Section align="left">
+                        <Heading size="3xl" color="white" mb={4}>Interactive CodePad</Heading>
+                        <Text fontSize="xl" color="gray.400">
+                            Write code, get instant feedback. <br />
+                            The environment adapts to you.
+                        </Text>
+                    </Section>
+
+                    {/* Section 4: Gamification */}
+                    <Section align="right">
+                        <Heading size="3xl" color="white" mb={4}>Stay Motivated</Heading>
+                        <Text fontSize="xl" color="gray.400">
+                            Streaks, badges, and progress. <br />
+                            Level up your career.
+                        </Text>
+                    </Section>
                 </Scroll>
             </ScrollControls>
 
             {/* Post Processing */}
             <EffectComposer>
-                <Bloom luminanceThreshold={0.2} mipmapBlur intensity={1.5} radius={0.6} />
+                <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} radius={0.4} />
                 <Noise opacity={0.05} />
                 <Vignette eskil={false} offset={0.1} darkness={1.1} />
             </EffectComposer>

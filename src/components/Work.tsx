@@ -47,6 +47,18 @@ const Work = () => {
       link: '/levelup',
     },
     {
+      title: 'LevelUp V2 (High Perf)',
+      description: 'Next-gen landing page featuring low-poly 3D assets, lazy loading, and <100KB GPU overhead.',
+      tags: ['Three.js', 'Performance', 'Procedural'],
+      link: '/levelup-v2',
+    },
+    {
+      title: 'Final Project',
+      description: 'A futuristic 3D hero section featuring glowing stairs and a portal gate, built with React Three Fiber.',
+      tags: ['React', 'Three.js', 'WebGL', 'Vite'],
+      link: '/final-project',
+    },
+    {
       title: 'Project One',
       description: 'A beautiful web application built with React and Three.js showcasing modern UI/UX principles.',
       tags: ['React', 'Three.js', 'TypeScript'],
@@ -109,20 +121,9 @@ const Work = () => {
 
           {/* Project Cards */}
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={8} w="100%">
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-              >
+            {projects.map((project, index) => {
+              const CardContent = (
                 <Box
-                  as={project.link ? Link : 'div'}
-                  // @ts-ignore
-                  to={project.link}
-                  display="block"
-                  textDecoration="none"
                   bg="rgba(255,255,255,0.05)"
                   borderRadius="lg"
                   p={6}
@@ -174,8 +175,40 @@ const Work = () => {
                     </HStack>
                   </VStack>
                 </Box>
-              </motion.div>
-            ))}
+              );
+
+              return (
+                <motion.div
+                  key={project.title}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                >
+                  {project.link ? (
+                    project.link.startsWith('http') ? (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none', display: 'block', height: '100%' }}
+                      >
+                        {CardContent}
+                      </a>
+                    ) : (
+                      <Link
+                        to={project.link}
+                        style={{ textDecoration: 'none', display: 'block', height: '100%' }}
+                      >
+                        {CardContent}
+                      </Link>
+                    )
+                  ) : (
+                    CardContent
+                  )}
+                </motion.div>
+              );
+            })}
           </SimpleGrid>
 
         </VStack>
